@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initBackToTopButton();
     initContactForm();
     initQualificationTabs();
+    initTypingAnimation();
 });
 
 // Mobile Menu Functionality
@@ -394,6 +395,28 @@ style.textContent = `
     .notification-close:hover {
         opacity: 0.8;
     }
+    
+    /* Typing Animation Styles */
+    .typing-text .cursor {
+        display: inline-block;
+        animation: blink 1s infinite;
+        font-weight: normal;
+        color: #0ea5e9;
+    }
+    
+    @keyframes blink {
+        0%, 50% {
+            opacity: 1;
+        }
+        51%, 100% {
+            opacity: 0;
+        }
+    }
+    
+    .typing-text {
+        display: inline-block;
+        min-height: 1.2em;
+    }
 `;
 document.head.appendChild(style);
 
@@ -434,6 +457,63 @@ function initQualificationTabs() {
             educationContent.classList.add('hidden');
         });
     }
+}
+
+// Dynamic Typing Animation
+function initTypingAnimation() {
+    const heroTitle = document.querySelector('#home h1');
+    if (!heroTitle) return;
+    
+    // Store original text
+    const originalText = "Hi, I'm ";
+    const nameText = "Sushil Kumar";
+    const fullText = originalText + nameText;
+    
+    // Clear the text first
+    heroTitle.innerHTML = '';
+    
+    // Create spans for different parts
+    const staticPart = document.createElement('span');
+    staticPart.textContent = originalText;
+    
+    const dynamicPart = document.createElement('span');
+    dynamicPart.className = 'gradient-text typing-text';
+    dynamicPart.innerHTML = '<span class="cursor">|</span>';
+    
+    heroTitle.appendChild(staticPart);
+    heroTitle.appendChild(dynamicPart);
+    
+    let charIndex = 0;
+    const typingSpeed = 150;
+    const pauseDuration = 2000;
+    const deletingSpeed = 100;
+    
+    function typeText() {
+        if (charIndex < nameText.length) {
+            const currentText = nameText.substring(0, charIndex + 1);
+            dynamicPart.innerHTML = currentText + '<span class="cursor">|</span>';
+            charIndex++;
+            setTimeout(typeText, typingSpeed);
+        } else {
+            // Pause, then start deleting
+            setTimeout(deleteText, pauseDuration);
+        }
+    }
+    
+    function deleteText() {
+        if (charIndex > 0) {
+            charIndex--;
+            const currentText = nameText.substring(0, charIndex);
+            dynamicPart.innerHTML = currentText + '<span class="cursor">|</span>';
+            setTimeout(deleteText, deletingSpeed);
+        } else {
+            // Pause, then start typing again
+            setTimeout(typeText, 500);
+        }
+    }
+    
+    // Start the animation after a short delay
+    setTimeout(typeText, 1000);
 }
 
 // Export functions for potential external use
